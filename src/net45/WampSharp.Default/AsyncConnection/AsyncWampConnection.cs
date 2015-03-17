@@ -29,7 +29,10 @@ namespace WampSharp
                 {
                     Task sendAsync = SendAsync(message);
 
-                    await sendAsync.ConfigureAwait(false);
+                    if (sendAsync != null)
+                    {
+                        await sendAsync.ConfigureAwait(false);                        
+                    }
                 }
                 catch (Exception)
                 {
@@ -93,10 +96,10 @@ namespace WampSharp
             if (handler != null) handler(this, new WampConnectionErrorEventArgs(e));
         }
         
-        void IDisposable.Dispose()
+        async void IDisposable.Dispose()
         {
             mSendBlock.Complete();
-            mSendBlock.Completion.Wait();
+            await mSendBlock.Completion;
             this.Dispose();
         }
 
